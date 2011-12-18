@@ -1,5 +1,6 @@
 require 'test_helper'
 require 'tire/http/clients/curb'
+require 'tire/http/clients/em-http-request'
 
 module Tire
   module HTTP
@@ -48,6 +49,45 @@ module Tire
           ::Curl::Easy.any_instance.expects(:http_get)
 
           response = Configuration.client.get "http://localhost:9200/articles/article/1"
+        end
+
+      end
+
+      context "EM Http Request" do
+        setup do
+          Configuration.client Client::EMHttpRequest
+        end
+
+        teardown do
+          Configuration.client Client::RestClient
+        end
+
+
+        should "respond to HTTP methods" do
+          assert_respond_to Client::EMHttpRequest, :get
+          assert_respond_to Client::EMHttpRequest, :post
+          assert_respond_to Client::EMHttpRequest, :put
+          assert_respond_to Client::EMHttpRequest, :delete
+          assert_respond_to Client::EMHttpRequest, :head
+        end
+
+        should "use POST method if request body passed" do
+          response = nil
+
+          EM.synchrony do
+            response = Configuration.client.post "http://localhost:3000", '{ "query_string" : { "query" : "apple" }}'
+            EM.stop
+          end
+          assert_equal response.class, Response
+        end
+
+        should "use GET method if request body is nil" do
+          response = nil
+          EM.synchrony do
+            response = Configuration.client.get "http://localhost:9200/articles/article/1"
+            EM.stop
+          end
+          assert_equal response.class, Response
         end
 
       end

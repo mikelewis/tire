@@ -43,6 +43,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "supermodel"
   s.add_development_dependency "curb"
+  s.add_development_dependency "eventmachine"
+  s.add_development_dependency "em-synchrony"
+  s.add_development_dependency "em-http-request"
+
 
   # These gems are not needed for CI at <http://travis-ci.org/#!/karmi/tire>
   #
